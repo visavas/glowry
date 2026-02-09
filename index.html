@@ -10,25 +10,14 @@
         #head { background: #E84F2F; padding: 18px; color: white; font-weight: bold; font-size: 16px; }
         #msgs { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #fcfcfc; }
         #input-area { padding: 15px; border-top: 1px solid #eee; display: flex; gap: 8px; background: white; }
-        
-        input#in { 
-            flex: 1; 
-            border: 1px solid #ddd; 
-            padding: 12px; 
-            border-radius: 12px; 
-            outline: none; 
-            font-size: 14px; 
-            background: #fff;
-            color: #000;
-        }
-
+        input#in { flex: 1; border: 1px solid #ddd; padding: 12px; border-radius: 12px; outline: none; font-size: 14px; background: #fff; color: #000; }
         button { background: #E84F2F; color: white; border: none; padding: 10px 18px; border-radius: 12px; cursor: pointer; font-weight: bold; }
         .msg { padding: 12px; border-radius: 14px; font-size: 14px; max-width: 85%; white-space: pre-wrap; line-height: 1.4; }
         .user { background: #E84F2F; color: white; align-self: flex-end; }
         .ai { background: #eee; color: #333; align-self: flex-start; }
     </style>
 </head>
-<body onclick="document.getElementById('in').focus()">
+<body>
     <div id="win">
         <div id="head">🌿 Glowry AI Assistant</div>
         <div id="msgs"><div class="msg ai">สวัสดีครับ! ยินดีต้อนรับสู่ Glowry ครับ ✨</div></div>
@@ -43,12 +32,6 @@
         const input = document.getElementById('in');
         const btn = document.getElementById('btn');
         const PROXY = "https://glowry.x10-aistudio.workers.dev/api";
-
-        // LAPTOP FOCUS FIX: Stop events from escaping the iframe
-        const stopPropagation = (e) => e.stopPropagation();
-        input.addEventListener('keydown', stopPropagation);
-        input.addEventListener('keypress', stopPropagation);
-        input.addEventListener('keyup', stopPropagation);
 
         async function ask() {
             const text = input.value.trim(); if(!text) return;
@@ -73,12 +56,30 @@
 
         btn.onclick = (e) => { e.stopPropagation(); ask(); };
         input.onkeydown = (e) => {
-            e.stopPropagation();
+            e.stopPropagation(); // Stop code from reaching Framer
             if(e.key === 'Enter') {
                 e.preventDefault();
                 ask();
             }
         };
+
+        // --- NEW FOCUS FIXES START HERE ---
+        
+        // 1. Listen for the focus command from the parent (Framer)
+        window.addEventListener('message', (event) => {
+            if (event.data === 'focus-input') {
+                input.focus();
+            }
+        });
+
+        // 2. Extra safety: Clicking anywhere in this window forces focus on input
+        document.body.addEventListener('click', () => {
+            input.focus();
+        }, true);
+
+        // 3. Stop all key events from leaving the iframe
+        window.addEventListener('keydown', (e) => e.stopPropagation(), true);
+        window.addEventListener('keyup', (e) => e.stopPropagation(), true);
     </script>
 </body>
 </html>
