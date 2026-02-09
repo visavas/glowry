@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body, html { margin: 0; padding: 0; overflow: hidden; font-family: -apple-system, sans-serif; }
+        #win { width: 340px; height: 500px; background: white; border-radius: 20px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid #eee; }
+        #head { background: #E84F2F; padding: 15px; color: white; font-weight: bold; display: flex; justify-content: space-between; }
+        #msgs { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #fcfcfc; }
+        #input-area { padding: 15px; border-top: 1px solid #eee; display: flex; gap: 8px; }
+        input { flex: 1; border: 1px solid #ddd; padding: 10px; border-radius: 10px; outline: none; font-size: 14px; }
+        button { background: #E84F2F; color: white; border: none; padding: 8px 15px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .msg { padding: 10px; border-radius: 12px; font-size: 14px; max-width: 85%; white-space: pre-wrap; }
+        .user { background: #E84F2F; color: white; align-self: flex-end; }
+        .ai { background: #eee; color: #333; align-self: flex-start; }
+    </style>
+</head>
+<body>
+    <div id="win">
+        <div id="head"><span>🌿 Glowry AI Assistant</span></div>
+        <div id="msgs"><div class="msg ai">สวัสดีครับ! ยินดีต้อนรับสู่ Glowry ครับ ✨</div></div>
+        <div id="input-area">
+            <input id="in" type="text" placeholder="ถามเมนูสุขภาพ..." autofocus>
+            <button id="btn">ส่ง</button>
+        </div>
+    </div>
+
+    <script>
+        const msgs = document.getElementById('msgs');
+        const input = document.getElementById('in');
+        const btn = document.getElementById('btn');
+        const PROXY = "https://glowry.x10-aistudio.workers.dev/api";
+
+        async function ask() {
+            const text = input.value.trim(); if(!text) return;
+            append(text, 'user'); input.value = '';
+            const loading = append('กำลังคิด...', 'ai');
+            try {
+                const res = await fetch(PROXY, { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({text}) 
+                });
+                const data = await res.json();
+                loading.innerText = data.text;
+            } catch(e) { loading.innerText = "ขออภัยครับ ระบบขัดข้อง"; }
+        }
+
+        function append(t, r) {
+            const d = document.createElement('div');
+            d.className = 'msg ' + r; d.innerText = t;
+            msgs.appendChild(d); msgs.scrollTop = 99999; return d;
+        }
+
+        btn.onclick = ask;
+        input.onkeydown = (e) => e.key === 'Enter' && ask();
+    </script>
+</body>
+</html>
