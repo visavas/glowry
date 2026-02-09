@@ -4,31 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
-        * { box-sizing: border-box; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: -apple-system, sans-serif; background: white; }
+        * { box-sizing: border-box; font-family: -apple-system, sans-serif; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #fff; }
         #win { width: 100%; height: 100%; display: flex; flex-direction: column; }
-        #head { background: #E84F2F; padding: 18px; color: white; font-weight: bold; font-size: 16px; }
-        #msgs { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #fcfcfc; }
-        #input-area { padding: 15px; border-top: 1px solid #eee; display: flex; gap: 8px; background: white; }
-        input#in { flex: 1; border: 1px solid #ddd; padding: 12px; border-radius: 12px; outline: none; font-size: 14px; background: #fff; color: #000; }
-        button { background: #E84F2F; color: white; border: none; padding: 10px 18px; border-radius: 12px; cursor: pointer; font-weight: bold; }
-        .msg { padding: 12px; border-radius: 14px; font-size: 14px; max-width: 85%; white-space: pre-wrap; line-height: 1.4; }
-        .user { background: #E84F2F; color: white; align-self: flex-end; }
-        .ai { background: #eee; color: #333; align-self: flex-start; }
-input#in {
-    user-select: text !important;
-    -webkit-user-select: text !important;
-    pointer-events: auto !important;
-    cursor: text !important;
-}   
+        
+        /* Header */
+        #head { background: #E84F2F; padding: 16px; color: white; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+        
+        /* Messages Body */
+        #msgs { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; background: #fcfcfc; scroll-behavior: smooth; }
+        
+        /* Bubble Styles */
+        .msg { padding: 12px 16px; border-radius: 18px; font-size: 14px; max-width: 85%; white-space: pre-wrap; line-height: 1.5; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .user { background: #E84F2F; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .ai { background: #fff; color: #333; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #eee; }
+
+        /* Menu Card Styles */
+        .card { background: white; border: 1px solid #eee; border-radius: 12px; padding: 12px; margin-top: 8px; width: 220px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .card:hover { transform: translateY(-2px); border-color: #E84F2F; }
+        .card b { display: block; color: #E84F2F; font-size: 14px; }
+        .card span { font-size: 11px; color: #888; display: block; margin-top: 4px; }
+        .card-price { float: right; font-weight: bold; color: #333; font-size: 13px; }
+
+        /* Input Area */
+        #input-area { padding: 15px; border-top: 1px solid #eee; display: flex; gap: 10px; background: white; }
+        input#in { flex: 1; border: 1px solid #eee; padding: 12px; border-radius: 12px; outline: none; font-size: 14px; background: #f9f9f9; }
+        button#btn { background: #E84F2F; color: white; border: none; padding: 0 20px; border-radius: 12px; cursor: pointer; font-weight: bold; }
+
+        /* Thinking Dots Animation */
+        .dots { display: flex; gap: 4px; padding: 10px; }
+        .dot { width: 6px; height: 6px; background: #ccc; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+
+        /* Mobile Full Screen */
+        @media (max-width: 600px) {
+            #msgs { padding: 15px; }
+            #head { border-radius: 0; }
+        }
     </style>
 </head>
 <body>
     <div id="win">
-        <div id="head">🌿 Glowry AI Assistant</div>
-        <div id="msgs"><div class="msg ai">สวัสดีครับ! ยินดีต้อนรับสู่ Glowry ครับ ✨</div></div>
+        <div id="head">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white" viewBox="0 0 256 256"><path d="M214.86,180.12a8,8,0,0,1-11,2.74L136,142.13V216a8,8,0,0,1-16,0V142.13L52.12,182.86a8,8,0,1,1-8.23-13.72L112.45,128,43.89,86.86a8,8,0,1,1,8.23-13.72L120,113.87V40a8,8,0,0,1,16,0v73.87l67.88-40.73a8,8,0,1,1,8.23,13.72L143.55,128l68.56,41.14A8,8,0,0,1,214.86,180.12Z"></path></svg>
+            <span>Glowry AI Assistant</span>
+        </div>
+        <div id="msgs"><div class="msg ai">สวัสดีค่ะ ยินดีต้อนรับสู่ Glowry ค่ะ ✨ มีอะไรให้ช่วยแนะนำเมนูสุขภาพไหมคะ?</div></div>
         <div id="input-area">
-            <input id="in" type="text" placeholder="ถามเราได้นะ..." autocomplete="off">
+            <input id="in" placeholder="ถามเราได้นะ..." autocomplete="off">
             <button id="btn">ส่ง</button>
         </div>
     </div>
@@ -39,53 +64,69 @@ input#in {
         const btn = document.getElementById('btn');
         const PROXY = "https://glowry.x10-aistudio.workers.dev/api";
 
+        const MENU_DATA = [
+            {"Title": "กรีน บาลานซ์ โบวล์", "Price": "580 บาท", "Kcal": "340", "Category": "Bowls", "Ingredients": "ผักโขม, อะโวคาโด, กีวี"},
+            {"Title": "ทรอปิคอล พาราไดซ์ โบวล์", "Price": "580 บาท", "Kcal": "360", "Category": "Bowls"},
+            {"Title": "อาซาอิ เอนเนอร์จี โบวล์", "Price": "720 บาท", "Kcal": "310", "Category": "Bowls"}
+            // ... frontend only needs a few to render templates
+        ];
+
         async function ask() {
             const text = input.value.trim(); if(!text) return;
-            append(text, 'user'); input.value = '';
-            const loading = append('กำลังคิด...', 'ai');
+            append(text, 'user');
+            input.value = '';
+            
+            const loader = appendDots();
             try {
-                const res = await fetch(PROXY, { 
-                    method: 'POST', 
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({text}) 
-                });
+                const res = await fetch(PROXY, { method: 'POST', body: JSON.stringify({text}), headers: {'Content-Type': 'application/json'} });
                 const data = await res.json();
-                loading.innerText = data.text;
-            } catch(e) { loading.innerText = "ขออภัยครับ ระบบขัดข้อง"; }
+                loader.remove();
+                
+                // Parse cards from AI response
+                let rawText = data.text;
+                let relatedTitles = [];
+                const cardMatch = rawText.match(/RELATED_CARDS:\s*\[(.*?)\]/);
+                if (cardMatch) {
+                   relatedTitles = cardMatch[1].split(',').map(t => t.trim().replace(/"/g, ''));
+                   rawText = rawText.replace(/RELATED_CARDS:[\s\S]*/, '');
+                }
+
+                append(rawText, 'ai', relatedTitles);
+            } catch(e) { loader.remove(); append("ขออภัยค่ะ ระบบขัดข้องค่ะ", 'ai'); }
         }
 
-        function append(t, r) {
+        function append(t, r, titles = []) {
+            const wrap = document.createElement('div');
+            wrap.style.display = 'flex';
+            wrap.style.flexDirection = 'column';
+            wrap.style.alignItems = r === 'user' ? 'flex-end' : 'flex-start';
+
             const d = document.createElement('div');
             d.className = 'msg ' + r; d.innerText = t;
-            msgs.appendChild(d); msgs.scrollTop = 999999; return d;
+            wrap.appendChild(d);
+
+            // Add Menu Cards
+            titles.forEach(title => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `<span class="card-price">เช็คเมนู</span><b>${title}</b><span>กดเพื่อดูรายละเอียดเมนูสุขภาพ</span>`;
+                card.onclick = () => window.open('https://gray-day-827620.framer.app/', '_blank');
+                wrap.appendChild(card);
+            });
+
+            msgs.appendChild(wrap); msgs.scrollTop = 99999;
         }
 
-        btn.onclick = (e) => { e.stopPropagation(); ask(); };
-        input.onkeydown = (e) => {
-            e.stopPropagation(); // Stop code from reaching Framer
-            if(e.key === 'Enter') {
-                e.preventDefault();
-                ask();
-            }
-        };
+        function appendDots() {
+            const d = document.createElement('div');
+            d.className = 'dots';
+            d.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+            msgs.appendChild(d); msgs.scrollTop = 99999;
+            return d;
+        }
 
-        // --- NEW FOCUS FIXES START HERE ---
-        
-        // 1. Listen for the focus command from the parent (Framer)
-        window.addEventListener('message', (event) => {
-            if (event.data === 'focus-input') {
-                input.focus();
-            }
-        });
-
-        // 2. Extra safety: Clicking anywhere in this window forces focus on input
-        document.body.addEventListener('click', () => {
-            input.focus();
-        }, true);
-
-        // 3. Stop all key events from leaving the iframe
-        window.addEventListener('keydown', (e) => e.stopPropagation(), true);
-        window.addEventListener('keyup', (e) => e.stopPropagation(), true);
+        btn.onclick = ask;
+        input.onkeydown = (e) => e.key === 'Enter' && ask();
     </script>
 </body>
 </html>
